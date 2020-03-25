@@ -1,5 +1,4 @@
-use futures::executor::block_on;
-use actix_web::{web, test, App, HttpServer, Responder};
+use actix_web::{test, web, App, HttpServer, Responder};
 
 async fn index() -> impl Responder {
     format!("Hello from Rust")
@@ -7,7 +6,7 @@ async fn index() -> impl Responder {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().service(web::resource("/").to(index)))
+    HttpServer::new(|| App::new().service(web::resource("/").route(web::get().to(index))))
         .bind("127.0.0.1:8000")?
         .run()
         .await
@@ -15,10 +14,7 @@ async fn main() -> std::io::Result<()> {
 
 #[actix_rt::test]
 async fn test_index() {
-    let srv = test::start(
-        || App::new().service(
-                web::resource("/").to(index))
-    );
+    let srv = test::start(|| App::new().service(web::resource("/").route(web::get().to(index))));
 
     let req = srv.get("/");
     let mut response = req.send().await.unwrap();
