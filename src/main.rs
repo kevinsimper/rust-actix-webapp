@@ -22,7 +22,7 @@ async fn test_index() {
 
     let req = srv.get("/");
     let mut response = req.send().await.unwrap();
-    let rawbody = block_on(response.body()).unwrap();
+    let rawbody = response.body().await.unwrap();
     let message = String::from_utf8(rawbody.to_vec()).unwrap();
     println!("{}", message);
     assert!(message == String::from("Hello from Rust"));
